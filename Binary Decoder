@@ -1,0 +1,51 @@
+"""
+  Decodes binary numbers
+  > python3 Team3-Decoder.py <binary-output file>
+"""
+
+# Imports the system module, used to get the file name of the binary output
+import sys
+
+# Sets the dictionary to the reverse of short codes
+dictionary = {"00000": "e", "00001": "a", "00010": "r", "00011": "i", "00100": "o", "00101": "t", "00110": "th", "00111": "er", "01000": "on", "01001": "an", "01010": "re", "01011": "the", "01100": "and", "01101": " ", "01110": ".", "01111": "\n"}
+# Adds the reverse of long codes
+dictionary.update({"1000000": "A", "1000001": "B", "1000010": "C", "1000011": "D", "1000100": "E", "1000101": "F", "1000110": "G", "1000111": "H", "1001000": "I", "1001001": "J", "1001010": "K", "1001011": "L", "1001100": "M", "1001101": "N", "1001110": "O", "1001111": "P", "1010000": "Q", "1010001": "R", "1010010": "S", "1010011": "T", "1010100": "U", "1010101": "V", "1010110": "W", "1010111": "X", "1011000": "Y", "1011001": "Z", "1011010": "b", "1011011": "c", "1011100": "d", "1011101": "f", "1011110": "g", "1011111": "h", "1100000": "j", "1100001": "k", "1100010": "l", "1100011": "m", "1100100": "n", "1100101": "p", "1100110": "q", "1100111": "s", "1101000": "u", "1101001": "v", "1101010": "w", "1101011": "x", "1101100": "y", "1101101": "z", "1101110": "0", "1101111": "1", "1110000": "2", "1110001": "3", "1110010": "4", "1110011": "5", "1110100": "6", "1110101": "7", "1110110": "8", "1110111": "9", "1111000": ",", "1111001": "-", "1111010": "!", "1111011": "\"", "1111100": "'", "1111101": "?", "1111110": ";", "1111111": ":"})
+# Sets the length of the short code
+S = 5
+# Sets the length of the long code
+L = 7
+
+# Function start
+def Decode(binOutFile = "BinOutput.txt"):
+  # Tests if the binary output file actually exists and raises an error if false
+  try:
+    fileBinOutput = open(binOutFile, "r")
+  except:
+    raise Exception("File not found.")
+  # Sets decode variable to the contents of the binary output file
+  decode = fileBinOutput.read()
+  fileBinOutput.close()
+  # Splits at the period which places the decimal in the first index and the binary in the second index
+  DecAndBin = decode.split(".")
+  # Ensures that only 2 indexes exist
+  assert len(DecAndBin) == 2
+  # Creates a list that is going to be filled with binary numbers
+  binNums = []
+  # Iterate through all the binary numbers to append each short & long code to the binNums list
+  index = 0
+  while index != len(DecAndBin[1]):
+    flag = int(DecAndBin[1][index])
+    binNums.append(DecAndBin[1][index : index + S] if flag == 0 else DecAndBin[1][index : index + L])
+    index += S if flag == 0 else L
+  # Decode codes using dictionary
+  decode = "".join(dictionary[i] for i in binNums)
+  # Writes the decoded message to the output file
+  out = open("TextOutput.txt", "w")
+  out.write(decode)
+  out.close()
+
+# Checks if input file name is provided and defaults to BinOutput.txt if false
+try:
+  Decode(sys.argv[1])
+except:
+  Decode()
