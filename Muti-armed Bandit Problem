@@ -1,0 +1,189 @@
+import random
+
+def exploreOnly():
+    # visiting cafeteria 1 100 times
+    i = 0
+    total1 = 0
+    while i < 100:
+        c1 = random.normalvariate(10, 8)
+        total1 = total1 + c1
+        i += 1
+    #print(total1)
+
+    # visiting cafeteria 2 100 times
+    x = 0
+    total2 = 0
+    while x < 100:
+        c2 = random.normalvariate(15, 6)
+        total2 = total2 + c2
+        x += 1
+    #print(total2)
+
+    # visiting cafeteria 3 100 times
+    y = 0
+    total3 = 0
+    while y < 100:
+        c3 = random.normalvariate(12, 5)
+        total3 = total3 + c3
+        y += 1
+    #print(total3)
+
+    # calculating total happiness by adding up total happiness from each cafeteria
+    total_happiness = total1 + total2 + total3
+    return(total_happiness)
+
+def exploitOnly():
+    # First 3 days, visit each cafeteria (c1, c2, c3) and generate
+    # a happiness score
+    c1 = random.normalvariate(10, 8)
+    c2 = random.normalvariate(15, 6)
+    c3 = random.normalvariate(12, 5)
+    #print(f"Day 1 happiness: {c1} | Day 2: {c2} | Day 3: {c3}")  # print statement for first 3 days
+
+    # total happiness for the 3 days
+    total = c1 + c2 + c3
+
+    # comparing to see which place had the highest happiness
+    if c1 > c2 and c1 > c3:
+        #print("c1 was the best!")
+        x = 0
+        while x < 297:  # if highest, go there for the next 297 days and add to the total each time
+            happiness = random.normalvariate(10, 8)
+            total = total + happiness
+            x += 1
+    elif c2 > c1 and c2 > c3:
+        #print("c2 was the best!")
+        x = 0
+        while x < 297:
+            happiness = random.normalvariate(15, 6)
+            total = total + happiness
+            x += 1
+    else:
+        #print("c3 was the best!")
+        x = 0
+        while x < 297:
+            happiness = random.normalvariate(12, 5)
+            total = total + happiness
+            x += 1
+    #print(f"The total happiness is {total}")  # print statement to visualize output
+    return total
+
+def eGreedy(e=10):
+    # visit each cafeteria once and generate a happiness score
+    c1 = random.normalvariate(10, 8)
+    c2 = random.normalvariate(15, 6)
+    c3 = random.normalvariate(12, 5)
+    days = [c1, c2, c3]  # put values in a list, so max() can be called to find best caf
+    total = c1 + c2 + c3
+
+    #tracks times picked
+    pc1 = 1
+    pc2 = 1
+    pc3 = 1
+
+    x = 0
+    while x < 297:
+        r = random.random()  #
+        # e/100: % of the time we'll go to a random caf
+        if r < e/100:  # go to random caf
+            choice = random.randint(1, 3)
+            if choice == 1:
+                #c1
+                happiness = random.normalvariate(10, 8)
+                days[0] = ((days[0]*pc1) + happiness)/(pc1 + 1)
+                pc1 += 1
+            elif choice == 2:
+                #c2
+                happiness = random.normalvariate(15, 6)
+                days[1] = ((days[1]*pc2) + happiness)/(pc2+1)
+                pc2 += 1
+            else:
+                #c3
+                happiness = random.normalvariate(12, 5)
+                days[2] = ((days[2] * pc3) + happiness)/(pc3 + 1)
+                pc3 += 1
+            total = total + happiness
+        else:  # go to current best caf
+            if max(days) == days[0]:
+                happiness = random.normalvariate(10, 8)
+                days[0] = ((days[0] * pc1) + happiness) / (pc1 + 1)
+                pc1 += 1
+            elif max(days) == days[1]:
+                happiness = random.normalvariate(15, 6)
+                days[1] = ((days[1] * pc2) + happiness) / (pc2 + 1)
+                pc2 += 1
+            else:
+                happiness = random.normalvariate(12, 5)
+                days[2] = ((days[2] * pc3) + happiness) / (pc3 + 1)
+                pc3 += 1
+            total = total + happiness
+        x += 1
+    #print(f"eGreedy total is {total}")
+    return total
+
+def simulation(t,e=10) :
+    '''
+    Print all the expected values, optium total happiness, regret for all functions
+    print average total happiness
+    print regret for t trials for all functions
+    '''
+    # Cafe 1 = mean of 10 and dev 8
+    meanc1 =10
+    # Cafe 2 Mean of 15 and deviation of 6
+    meanc2 = 15
+    # Cafe 3 mean of 12 deviation of 5
+    meanc3 = 12
+
+    #finds Optimum Happiness
+    #300 is the fixed  number of days going to the cafes
+    #t number of trials
+    OptimumHap = meanc2*300
+
+    #Adds the first 3 trials then takes the highest mean for the rest
+    expectExploit = ((meanc1+meanc2+meanc3)+ meanc2*(297))
+    regEploit = OptimumHap-expectExploit
+    # Takes a 1/3 of 300 and breaks up the means accordingly (changes if float to int then string)
+    expectExplore = ((meanc1 * (300/ 3)) + (meanc2 * (300/ 3)) + (meanc3 * (300/ 3)))
+    regExplore = OptimumHap-expectExplore
+
+    # set e to a percet
+    randpercent = e / 100
+    #get the rest of the percentage for the non random trials
+    bestpercent = (100-e)/100
+    expectGreedy = (meanc2*(bestpercent)+(meanc1*(randpercent/3)+meanc2*(randpercent/3)+meanc3*(randpercent/3)))*300
+    regGreedy = OptimumHap-expectGreedy
+
+    totalExploit = 0
+    totalExplore = 0
+    totalGreedy = 0
+
+    for i in range(t):
+        #print(i)
+        totalExploit += exploitOnly()
+        totalExplore += exploreOnly()
+        totalGreedy += eGreedy(e)
+
+#Explore only seems to be working as intented
+#Check Greedy
+#Exploit good
+
+    print("Optimum Happiness is ",OptimumHap)
+
+    print("The expected happiness for Exploit for t trials is",expectExploit)
+    print("The expected regret for Exploit for t trials is",regEploit)
+    print("The average happiness for Exploit is",totalExploit/t)
+    print("The regret in Exploit generated for t trials is",(((OptimumHap*t)-(totalExploit))/t),"\n")
+
+    print("The expected  happiness for Explore only is",expectExplore)
+    print("The expected regret for Explore only is",regExplore)
+    print("The average happiness for Explore is", totalExplore/t)
+    print("The regret in Explore generated for t trials is", (((OptimumHap*t) - (totalExplore))/t),"\n")
+
+    print("The expected happiness for Greedy is",expectGreedy)
+    print("The expected regret for Greedy is",regGreedy)
+    print("The average happiness for Greedy is", totalGreedy/t)
+    print("The regret in Greedy generated for t trials is", (((OptimumHap*t) - totalGreedy)/t),"\n")
+
+#simulation(1000)
+simulation(100000)
+#exploitOnly()
