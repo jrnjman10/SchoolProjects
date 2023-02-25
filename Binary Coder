@@ -1,0 +1,48 @@
+"""
+  Compression of ascii (upper & lower), digits, and .,-!'"<newline><space>:;?
+  Total: 73 characters
+  > python3 Team3-Code.py <input file>
+"""
+
+# Imports the system module, used to get the file name of the input
+import sys
+
+# Sets dictionary to short codes
+dictionary = { "e" : "*****" , "a" : "****_",  "r" : "***_*", "i" : "***__", "o" : "**_**", "t" : "**_*_", "th" : "**__*", "er" : "**___", "on" : "*_***", "an" : "*_**_", "re" : "*_*_*", "the" : "*_*__", "and" : "*__**", " " : "*__*_", "." : "*___*", "\n" : "*____"}
+# Adds long codes to dictionary
+dictionary.update({"A": "_******", "B": "_*****_", "C": "_****_*", "D": "_****__", "E": "_***_**", "F": "_***_*_", "G": "_***__*", "H": "_***___", "I": "_**_***", "J": "_**_**_", "K": "_**_*_*", "L": "_**_*__", "M": "_**__**", "N": "_**__*_", "O": "_**___*", "P": "_**____", "Q": "_*_****", "R": "_*_***_", "S": "_*_**_*", "T": "_*_**__", "U": "_*_*_**", "V": "_*_*_*_", "W": "_*_*__*", "X": "_*_*___", "Y": "_*__***", "Z": "_*__**_", "b": "_*__*_*", "c": "_*__*__", "d": "_*___**", "f": "_*___*_", "g": "_*____*", "h": "_*_____", "j": "__*****", "k": "__****_", "l": "__***_*", "m": "__***__", "n": "__**_**", "p": "__**_*_", "q": "__**__*", "s": "__**___", "u": "__*_***", "v": "__*_**_", "w": "__*_*_*", "x": "__*_*__", "y": "__*__**", "z": "__*__*_", "0": "__*___*", "1": "__*____", "2": "___****", "3": "___***_", "4": "___**_*", "5": "___**__", "6": "___*_**", "7": "___*_*_", "8": "___*__*", "9": "___*___", ",": "____***", "-": "____**_", "!": "____*_*", "\"": "____*__", "'": "_____**", "?": "_____*_", ";": "______*", ":": "_______"})
+
+# Function start
+def Code(inputFile = "BinInput.txt"):
+  # Tests if the input file actually exists and raises an error if false
+  try:
+    fileInput = open(inputFile, "r")
+  except:
+    raise Exception("File not found.")
+  # Sets encode variable to the contents of the input file
+  encode = fileInput.read()
+  fileInput.close()
+  # Gets the 'keys' of the dictionary
+  keys = list(dictionary.keys())
+  # Sorts the key list with the longest key at the start
+  keys.sort(key = len, reverse = True)
+  # Goes through each key and replaces all instances of the key in the encode variable
+  for k in keys:
+    encode = encode.replace(k, dictionary[k])
+  # Replaces the *'s and -'s with 0's and 1's respectively
+  encode = encode.replace("*", "0")
+  encode = encode.replace("_", "1")
+  # Sets a final variable that holds the desired output
+  final = "{}.{}".format(len(encode), encode)
+  # Writes final to the output file
+  sys.stdout.write(final)
+  out = open("BinOutput.txt", "w")
+  out.write(final)
+  out.close()
+
+# Checks if input file name is provided and defaults to BinInput.txt if false
+
+try:
+  Code(sys.argv[1])
+except:
+  Code()
